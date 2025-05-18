@@ -5,6 +5,125 @@
 }
 
 body {
-    font-family: "ROBOTO", sans-serif;
+    font-family: "Roboto Slab", serif;
+    background-color: #2D2A55;
+    color: #FFFFFF;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.option-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.option-div > p {
+    color: #FFFFFF;
+    font-size: 1.2rem;
+}
+
+button {
+    background-color: #5A4FCF;
+    color: #FFFFFF;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 1);
+}
+
+button:hover {
+    background-color: #776BFF;
+    transform: translateY(-2px);
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 0;
+}
+
+.box {
+    display: flex;
+    justify-content: center;
+    background-color: #2D2A55;
+    color: #FFFFFF;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.box:not(:nth-child(3)):not(:nth-child(6)):not(:nth-child(9)) {
+    border-right: 2px solid #FFFFFF;
+}
+
+.box:not(:nth-child(7)):not(:nth-child(8)):not(:nth-child(9)) {
+    border-bottom: 2px solid #FFFFFF;
+}
+
+/* reposnsive */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    .option-div > p {
+        font-size: 1rem;
+    }
+
+    .button {
+        font-size: 0.9rem;
+        padding: 8px 14px;
+    }
+
+    .game-grid {
+        grid-template-columns: repeat(3, 70px);
+        grid-template-rows: repeat(3, 70px);
+    }
+
+    .box {
+        width: 70px;
+        height: 70px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .game-grid {
+        grid-template-columns: repeat(3, 60px);
+        grid-template-rows: repeat(3, 60px);
+    }
+
+    .box {
+        width: 60px;
+        height: 60px;
+        font-size: 1rem;
+    }
 }
