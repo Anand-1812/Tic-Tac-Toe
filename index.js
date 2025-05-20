@@ -1,44 +1,51 @@
-let board = ["", "", "", "", "", "", "", "", ""];
+function TicTacToeGame(config) {
+    const board = Array(9).fill("");
+    let player1 = null;
+    let player2 = null;
+    let currentPlayer = null;
 
-let player1 = null;
-let player2 = null;
-let currentPlayer = null;
+    const {
+        playBtn,
+        userDiv,
+        turnDisplay,
+        containerDiv,
+        grid,
+        popUp,
+        resultMessage,
+        playAgainBtn
+    } = config;
 
-const playBtn = document.getElementById("play-btn");
-const userDiv = document.querySelector(".user-div");
-const turnDisplay = document.getElementById("turnmessage");
-const containerDiv = document.querySelector(".container");
-const grid = document.querySelectorAll(".box");
+    const winningCombos = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+    ];
 
-turnDisplay.innerHTML = "";
-turnDisplay.style.display = "none";
+    function init() {
+        playBtn.addEventListener("click", () => {
+            userDiv.classList.add("show");
+            containerDiv.classList.add("show-div");
+            playBtn.style.display = "none";
+        });
 
-// Winning combinations
-const winningCombos = [
-    [0,1,2], [3,4,5], [6,7,8], // rows
-    [0,3,6], [1,4,7], [2,5,8], // cols
-    [0,4,8], [2,4,6]           // diagonals
-];
+        userDiv.addEventListener("transitionend", () => {
+            if (userDiv.classList.contains("hide")) {
+                userDiv.style.display = "none";
+                userDiv.classList.remove("show", "hide");
+            }
+        });
 
-// Show user input form and container on Play button click
-playBtn.addEventListener("click", () => {
-    userDiv.classList.add("show");
-    containerDiv.classList.add("show-div");
-    playBtn.style.display = "none";
-});
+        playAgainBtn.addEventListener("click", () => {
+            popUp.close();
+            enableBoard();
+            displayTurn();
+        });
 
-// Hide userDiv after fade out transition ends
-userDiv.addEventListener("transitionend", () => {
-    if (userDiv.classList.contains("hide")) {
-        userDiv.style.display = "none";
-        userDiv.classList.remove("show", "hide");
+        bindSymbolChoice();
     }
-});
 
-function displayInDom(userDiv, turnDisplay) {
-    function optionBtn() {
+    function bindSymbolChoice() {
         const option = document.querySelectorAll(".option-div button");
-
         option.forEach((btn) => {
             btn.addEventListener("click", () => {
                 const name1 = document.getElementById("first-player").value.trim();
@@ -50,61 +57,49 @@ function displayInDom(userDiv, turnDisplay) {
                 }
 
                 const chosenSymbol = btn.textContent;
-
-                // Assign to global player variables
                 player1 = { name: name1, symbol: chosenSymbol };
                 player2 = { name: name2, symbol: chosenSymbol === "X" ? "O" : "X" };
                 currentPlayer = player1;
 
-                // Fade out user input form
                 userDiv.classList.add("hide");
-
-                // Clear inputs
                 document.getElementById("first-player").value = "";
                 document.getElementById("second-player").value = "";
 
+                enableBoard();
                 displayTurn();
-                enableMove();
             });
         });
     }
 
-    function displayTurn() {
-        turnDisplay.style.display = "block";
-        turnDisplay.textContent = `${currentPlayer.name}'s turn (${currentPlayer.symbol})`;
-    }
-
-    function enableMove() {
-        board = ["", "", "", "", "", "", "", "", ""]; // reset board
-        grid.forEach(box => {
+    function enableBoard() {
+        for (let i = 0; i < 9; i++) board[i] = "";
+        grid.forEach((box, index) => {
             box.textContent = "";
             box.style.pointerEvents = "auto";
-            box.style.color = "#FFFFFF";  // reset color if needed
-            box.addEventListener("click", handleMove, { once: true });
+            box.style.color = "#FFFFFF";
+            box.addEventListener("click", () => handleMove(index, box), { once: true });
         });
     }
 
-    function handleMove(e) {
-        const box = e.target;
-        const index = Array.from(grid).indexOf(box);
-
+    function handleMove(index, box) {
+        board[index] = currentPlayer.symbol;
         box.textContent = currentPlayer.symbol;
         box.style.pointerEvents = "none";
 
-        board[index] = currentPlayer.symbol;
-
         if (checkWin(currentPlayer.symbol)) {
             turnDisplay.textContent = `${currentPlayer.name} wins! 🎉`;
+            showPopup(`${currentPlayer.name} wins! 🎉`);
             disableBoard();
             return;
         }
 
         if (checkDraw()) {
             turnDisplay.textContent = "It's a draw!";
+            showPopup("It's a draw!");
             return;
         }
 
-        switchPlayer();
+        currentPlayer = currentPlayer === player1 ? player2 : player1;
         displayTurn();
     }
 
@@ -118,8 +113,9 @@ function displayInDom(userDiv, turnDisplay) {
         return board.every(cell => cell !== "");
     }
 
-    function switchPlayer() {
-        currentPlayer = currentPlayer === player1 ? player2 : player1;
+    function displayTurn() {
+        turnDisplay.style.display = "block";
+        turnDisplay.textContent = `${currentPlayer.name}'s turn (${currentPlayer.symbol})`;
     }
 
     function disableBoard() {
@@ -128,13 +124,26 @@ function displayInDom(userDiv, turnDisplay) {
         });
     }
 
+    function showPopup(message) {
+        resultMessage.textContent = message;
+        popUp.showModal();
+    }
+
     return {
-        optionBtn,
-        displayTurn,
-        enableMove
+        init
     };
 }
 
-// Initialize
-const uiHandler = displayInDom(userDiv, turnDisplay);
-uiHandler.optionBtn();
+
+const game = TicTacToeGame({
+    playBtn: document.getElementById("play-btn"),
+    userDiv: document.querySelector(".user-div"),
+    turnDisplay: document.getElementById("turnmessage"),
+    containerDiv: document.querySelector(".container"),
+    grid: document.querySelectorAll(".box"),
+    popUp: document.getElementById("play-again"),
+    resultMessage: document.getElementById("result-message"),
+    playAgainBtn: document.getElementById("play-again-btn")
+});
+
+game.init(); // Start the game
