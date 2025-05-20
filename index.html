@@ -11,24 +11,40 @@
 </head>
 <body>
     <h1>Tic Tac Toe</h1>
-    <div class="option-div">
-        <p>Choose an option: </p>
-        <button class="cross-sign">X</button>
-        <button class="no-sign">O</button>
+    <div class="user-div">
+        <div class="name-input">
+            <p>
+                <label for="first-player">Player 1: </label>
+                <input type="text" name="first-player" id="first-player" placeholder="player one name....">
+            </p>
+            <p>
+                <label for="second-player">Player 2: </label>
+                <input type="text" name="second-player" id="second-player" placeholder="player two name....">
+            </p>
+        </div>
+        <div class="option-div">
+            <p>Choose an option: </p>
+            <div class="btn-div">
+                <button class="cross-sign">X</button>
+                <button class="no-sign">O</button>
+            </div>
+        </div>
     </div>
+    
+    
     <div class="container">
         <div class="game-grid">
-            <div class="box one">1</div>
-            <div class="box two">2</div>
-            <div class="box three">3</div>
-            <div class="box four">4</div>
-            <div class="box five">5</div>
-            <div class="box six">6</div>
-            <div class="box seven">7</div>
-            <div class="box eight">8</div>
-            <div class="box nine">9</div>
+            <div class="box one"></div>
+            <div class="box two">X</div>
+            <div class="box three">X</div>
+            <div class="box four">X</div>
+            <div class="box five">X</div>
+            <div class="box six">O</div>
+            <div class="box seven">O</div>
+            <div class="box eight">O</div>
+            <div class="box nine">O</div>
         </div>
-    </div
+    </div>
     <script src="index.js"></script>
 </body>
 </html>
