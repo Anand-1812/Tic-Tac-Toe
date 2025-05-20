@@ -1,164 +1,140 @@
-// import { createInterface } from 'readline';
+let board = ["", "", "", "", "", "", "", "", ""];
 
-// const rl = createInterface({
-//     input: process.stdin,
-//     output: process.stdout
-// });
+let player1 = null;
+let player2 = null;
+let currentPlayer = null;
 
-// const grid = [
-//     [' ', ' ', ' '],
-//     [' ', ' ', ' '],
-//     [' ', ' ', ' ']
-// ];
+const playBtn = document.getElementById("play-btn");
+const userDiv = document.querySelector(".user-div");
+const turnDisplay = document.getElementById("turnmessage");
+const containerDiv = document.querySelector(".container");
+const grid = document.querySelectorAll(".box");
 
-// Create a user
-function createPlayer(name, symbol) {
-    return { name, symbol };
-}
+turnDisplay.innerHTML = "";
+turnDisplay.style.display = "none";
 
-// // Game setup and functions
-// function createGame(grid) {
-//     function displayBoard() {
-//         console.log('\nCurrent Board:');
-//         for (let i = 0; i < 3; i++) {
-//             console.log(' ' + grid[i].join(' | '));
-//             if (i < 2) console.log('-----------');
-//         }
-//         console.log('');
-//     }
+// Winning combinations
+const winningCombos = [
+    [0,1,2], [3,4,5], [6,7,8], // rows
+    [0,3,6], [1,4,7], [2,5,8], // cols
+    [0,4,8], [2,4,6]           // diagonals
+];
 
-//     function askPlayers(callback) {
-//         rl.question('Player 1, enter your name: ', name1 => {
-//             rl.question('Choose X or O: ', symbol1 => {
-//                 symbol1 = symbol1.trim().toUpperCase();
-//                 if (symbol1 !== 'X' && symbol1 !== 'O') {
-//                     console.log('Invalid symbol. Please choose either X or O.');
-//                     rl.close();
-//                     return;
-//                 }
+// Show user input form and container on Play button click
+playBtn.addEventListener("click", () => {
+    userDiv.classList.add("show");
+    containerDiv.classList.add("show-div");
+    playBtn.style.display = "none";
+});
 
-//                 const player1 = createUser(name1.trim(), symbol1);
-//                 const symbol2 = symbol1 === 'X' ? 'O' : 'X';
+// Hide userDiv after fade out transition ends
+userDiv.addEventListener("transitionend", () => {
+    if (userDiv.classList.contains("hide")) {
+        userDiv.style.display = "none";
+        userDiv.classList.remove("show", "hide");
+    }
+});
 
-//                 rl.question('Player 2, enter your name: ', name2 => {
-//                     const player2 = createUser(name2.trim(), symbol2);
-//                     console.log(`\n${player1.name} is '${player1.symbol}'`);
-//                     console.log(`${player2.name} is '${player2.symbol}'\n`);
-//                     callback(player1, player2);
-//                 });
-//             });
-//         });
-//     }
+function displayInDom(userDiv, turnDisplay) {
+    function optionBtn() {
+        const option = document.querySelectorAll(".option-div button");
 
-//     return {
-//         displayBoard,
-//         askPlayers
-//     };
-// }
+        option.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const name1 = document.getElementById("first-player").value.trim();
+                const name2 = document.getElementById("second-player").value.trim();
 
-// // Game flow
-// function gameFlow() {
-//     function askPlayer(callback) {
-//         rl.question('Enter row (0, 1, 2): ', row => {
-//             row = parseInt(row);
-//             rl.question('Enter column (0, 1, 2): ', column => {
-//                 column = parseInt(column);
-//                 callback(row, column);
-//             });
-//         });
-//     }
+                if (!name1 || !name2) {
+                    alert("Please enter both player names.");
+                    return;
+                }
 
-//     return {
-//         askPlayer
-//     };
-// }
+                const chosenSymbol = btn.textContent;
 
-// // check for win
-// function checkWin(symbol) {
-//     if (grid[0][0] === symbol && grid[1][1] === symbol && grid[2][2] === symbol) return true;
-//     if (grid[0][2] === symbol && grid[1][1] === symbol && grid[2][0] === symbol) return true;
+                // Assign to global player variables
+                player1 = { name: name1, symbol: chosenSymbol };
+                player2 = { name: name2, symbol: chosenSymbol === "X" ? "O" : "X" };
+                currentPlayer = player1;
 
-//     for (let i = 0;i < 3;i++) {
-//         if (grid[i][0] === symbol && grid[i][1] === symbol && grid[i][2] === symbol) return true;
-//         if (grid[0][i] === symbol && grid[1][i] === symbol && grid[2][i] === symbol) return true;
-//     }
+                // Fade out user input form
+                userDiv.classList.add("hide");
 
-//     return false;
-// }
+                // Clear inputs
+                document.getElementById("first-player").value = "";
+                document.getElementById("second-player").value = "";
 
-// // checks for draw
-// function isDraw() {
-//     for (let row = 0;row < 3;row++) {
-//         for (let col = 0;col < 3;col++) {
-//             if (grid[row][col] === ' ') {
-//                 return false;
-//             }
-//         }
-//     }
-//     return true;
-// }
-
-// // ----- function for changing turns -----
-
-// function startTurns(currentPlayer, otherPlayer, game, flow) {
-
-//     game.displayBoard();
-//     console.log(`${currentPlayer.name} turn`);
-//     flow.askPlayer((row, column) => {
-//         if (row < 0 || row > 2 || column < 0 || column > 2 || grid[row][column] !== ' ') {
-//             console.log('Invalid move, Try again');
-//             return startTurns(currentPlayer, otherPlayer, game, flow);
-//         }
-//         grid[row][column] = currentPlayer.symbol;
-
-//         if (checkWin(currentPlayer.symbol)) {
-//             game.displayBoard();
-//             console.log(`🎉 ${currentPlayer.name} wins!`);
-//             rl.close();
-//             return;
-//         }
-
-//         if (isDraw()) {
-//             game.displayBoard();
-//             console.log("It's a draw!");
-//             rl.close();
-//             return;
-//         }
-
-//         startTurns(otherPlayer, currentPlayer, game, flow);
-//     });
-// }
-
-// // ----- Game Setup -----
-
-// const game = createGame(grid);    
-// const flow = gameFlow();
-// game.displayBoard();
-
-// game.askPlayers((player1, player2) => {
-//     console.log('Game setup complete. Ready to play!');
-//     startTurns(player1, player2, game, flow);
-// });
-
-// ---------- DOM ----------
-
-function displayInDom() {
-    const gameGrid = document.querySelectorAll(".box");
-
-    gameGrid.forEach((box) => {
-        box.addEventListener("click", () => {
-            box.textContent = "X"; // Or "O", depending on the turn
+                displayTurn();
+                enableMove();
+            });
         });
-    });
+    }
+
+    function displayTurn() {
+        turnDisplay.style.display = "block";
+        turnDisplay.textContent = `${currentPlayer.name}'s turn (${currentPlayer.symbol})`;
+    }
+
+    function enableMove() {
+        board = ["", "", "", "", "", "", "", "", ""]; // reset board
+        grid.forEach(box => {
+            box.textContent = "";
+            box.style.pointerEvents = "auto";
+            box.style.color = "#FFFFFF";  // reset color if needed
+            box.addEventListener("click", handleMove, { once: true });
+        });
+    }
+
+    function handleMove(e) {
+        const box = e.target;
+        const index = Array.from(grid).indexOf(box);
+
+        box.textContent = currentPlayer.symbol;
+        box.style.pointerEvents = "none";
+
+        board[index] = currentPlayer.symbol;
+
+        if (checkWin(currentPlayer.symbol)) {
+            turnDisplay.textContent = `${currentPlayer.name} wins! 🎉`;
+            disableBoard();
+            return;
+        }
+
+        if (checkDraw()) {
+            turnDisplay.textContent = "It's a draw!";
+            return;
+        }
+
+        switchPlayer();
+        displayTurn();
+    }
+
+    function checkWin(symbol) {
+        return winningCombos.some(combo =>
+            combo.every(index => board[index] === symbol)
+        );
+    }
+
+    function checkDraw() {
+        return board.every(cell => cell !== "");
+    }
+
+    function switchPlayer() {
+        currentPlayer = currentPlayer === player1 ? player2 : player1;
+    }
+
+    function disableBoard() {
+        grid.forEach(box => {
+            box.style.pointerEvents = "none";
+        });
+    }
+
+    return {
+        optionBtn,
+        displayTurn,
+        enableMove
+    };
 }
 
-displayInDom();
-
-const option = document.querySelectorAll(".option-div button");
-option.forEach((btn) => {
-    btn.addEventListener("click", () => {
-        const choose = btn.textContent;
-        const player1 = createPlayer()
-        console.log(choose);
-    })
-})
+// Initialize
+const uiHandler = displayInDom(userDiv, turnDisplay);
+uiHandler.optionBtn();
