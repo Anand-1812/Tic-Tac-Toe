@@ -134,7 +134,7 @@ function TicTacToeGame(config) {
     };
 }
 
-
+// object of the game
 const game = TicTacToeGame({
     playBtn: document.getElementById("play-btn"),
     userDiv: document.querySelector(".user-div"),
